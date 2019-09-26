@@ -1,0 +1,24 @@
+---
+title: "10 - Running through H2O Documentation"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+library(h2o)
+h2o.init()
+```
+
+# Getting Data into your H2O Cluster
+
+Here is the process for [uploading a file](http://h2o-release.s3.amazonaws.com/h2o/rel-yau/5/docs-website/h2o-docs/data-munging/uploading-data.html) and [importing a file](http://h2o-release.s3.amazonaws.com/h2o/rel-yau/5/docs-website/h2o-docs/data-munging/importing-data.html).
+
+I will just be uploading a file in this case, as this is what I will need to be doing for most of the LAPOP datasets.
+
+```{r}
+bolivia_path <- "142790203Bolivia LAPOP AmericasBarometer 2017 V1.0_W.dta"
+
+boliva_2017 <- h2o.uploadFile(path = bolivia_path, destination_frame = "bolivia_2017")
+```
+
