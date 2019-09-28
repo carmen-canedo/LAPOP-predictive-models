@@ -1,0 +1,49 @@
+---
+title: "12 - Following Gentle Intro to Tidymodels"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Notes from Gentle Intro to Tidymodels
+
+The article can be found [here](https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/).
+
+Tidymodels is a group of packages that doesn't implement the statistical models themselves, but simplifies data pre-processing and results validation.
+
+# Four tidymodels packages sampled by modeling step:
+
+## Pre-Process
+* `rsample` - different types of re-samples
+* `recipes` - transformations for model data pre-processing
+
+## Train
+* `parnip` - a common interface for model creation
+
+## Validate
+* `yardstick` - measure model performance
+
+# Iris Example
+Loading in `tidymodels` also loads in `dplyr` and `ggplot` along with other packages from `tidyverse`, so in this case `tidymodels` is the only package we need to load.
+
+```{r}
+library(tidymodels)
+```
+
+## Pre-Process
+Pre-processing is where you would clean the data to prepare it for modeling. Most transformations can be completed with `tidyverse`.
+
+## Data Sampling
+`initial_split()` creates two datasets:
+1. Training set
+  - 3/4 of data held here
+2: Testing set
+  - 1/4 of data used for testing
+This then creates an `rplit` object.
+
+```{r}
+iris_split <- initial_split(iris, prop = 0.6) 
+#prop argument changes the proportion of data in each set
+iris_split #Results: row count for testing/training/total
+```
+
