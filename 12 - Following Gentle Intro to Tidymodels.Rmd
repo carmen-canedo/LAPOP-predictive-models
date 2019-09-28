@@ -7,7 +7,7 @@ editor_options:
 
 # Notes from Gentle Intro to Tidymodels
 
-The article can be found [here](https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/).
+These notes are for personal reference only, the content comes from Gentle Intro to Tidymodels by Edgar Ruiz. The article can be found [here](https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/).
 
 Tidymodels is a group of packages that doesn't implement the statistical models themselves, but simplifies data pre-processing and results validation.
 
@@ -47,3 +47,59 @@ iris_split <- initial_split(iris, prop = 0.6)
 iris_split #Results: row count for testing/training/total
 ```
 
+`training()` and `testing()` access observations from their respective datasets.
+
+```{r}
+#Viewing data from training set
+iris_split %>% 
+  training() %>% 
+  glimpse()
+```
+
+## Pre-process interface
+`recipes` package provides a data pre-processing interface.
+
+* `recipe()` - starts a new set of transformations to be applied. Main argument is the model's formula. (Similar to `ggplot()`)
+* `prep()` - executes the transformations on top of the data that is supplied (the training data, most typically)
+
+*Each data transformation is a step* and functions correspond to specific steps.
+
+* `step_corr()` - removes variables that have large absolute correlations with other variables
+* `step_center()` - normalizes numeric data to have a mean of zero
+* `step_scale()` - normalizes numeric data to have an SD of 1
+
+These can be used in conjunction with `all_outcomes()` and `all_predictors()` to group variables.
+
+```{r}
+iris_recipe <- training(iris_split) %>% 
+  recipe(Species ~.) %>% 
+  step_corr(all_predictors()) %>% 
+  step_center(all_predictors(), -all_outcomes()) %>% 
+  step_scale(all_predictors(), -all_outcomes()) %>% 
+  prep()
+
+#Calling object prints out details about the recipe
+iris_recipe
+```
+
+## Execute the pre-processing
+To apply the same transformations on the testing data, we use `bake()`.
+
+```{r}
+iris_testing <- iris_recipe %>% 
+  #Used to extract the right dataset
+  testing(iris_split) %>% 
+  bake()
+
+#View results
+glimpse(iris_testing)
+```
+
+To load the training data into an object, use `juice()`.
+```{r}
+iris_training <- juice(iris_recipe)
+
+glimpse(iris_training)
+```
+
+## Model Training
