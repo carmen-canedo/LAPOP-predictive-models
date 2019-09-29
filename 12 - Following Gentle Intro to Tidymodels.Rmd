@@ -88,8 +88,7 @@ To apply the same transformations on the testing data, we use `bake()`.
 ```{r}
 iris_testing <- iris_recipe %>% 
   #Used to extract the right dataset
-  testing(iris_split) %>% 
-  bake()
+  bake(testing(iris_split))
 
 #View results
 glimpse(iris_testing)
@@ -103,3 +102,26 @@ glimpse(iris_training)
 ```
 
 ## Model Training
+Multiple packages can fit the same type of model and each provides a unique interface. So it is not easy to switch between packages when running the same model.
+
+*`tidymodels` replaces the interface and provides a single set of functions and arguments to define a model then fits the model against the requested modeling package*
+
+```{r}
+iris_ranger <- rand_forest(trees = 100, mode = "classification") %>% 
+  #Uses `ranger` package
+  set_engine("ranger") %>% 
+  fit(Species ~ ., data = iris_training)
+
+iris_ranger
+```
+
+Using `tidymodels` you can run the same model against `randomForest`
+
+```{r}
+iris_rf <- rand_forest(trees = 100, mode = "classification") %>% 
+  set_engine("randomForest") %>% 
+  fit(Species ~ ., data = iris_training)
+
+iris_rf
+```
+
