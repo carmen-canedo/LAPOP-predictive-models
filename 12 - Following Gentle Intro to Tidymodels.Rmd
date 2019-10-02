@@ -171,8 +171,53 @@ iris_ranger %>%
 
 Use `bind_cols()`to add predictions to the baked testing dataset. 
 
+```{r}
+iris_probs <- iris_ranger %>% 
+  predict(iris_testing, type = "prob") %>% 
+  bind_cols(iris_testing)
 
+glimpse(iris_probs)
+```
 
+Now everything is in one tibble and you can calculate curve methods - here we use `gain_curve()`.
 
+```{r}
+iris_probs %>% 
+  gain_curve(Species, .pred_setosa:.pred_virginica) %>% 
+  glimpse()
+```
 
+Using `autoplot()` makes a visualization using the ggplot2 package.
+
+```{r}
+iris_probs %>% 
+  gain_curve(Species, .pred_setosa:.pred_virginica) %>% 
+  autoplot()
+```
+
+Now viewing with `roc_curve()`:
+
+```{r}
+iris_probs%>%
+  roc_curve(Species, .pred_setosa:.pred_virginica) %>%
+  autoplot()
+```
+
+When you combine the two prediction models, you can measure the combined single predicted value and probability of each possible value.
+
+```{r}
+predict(iris_ranger, iris_testing, type = "prob") %>% 
+  bind_cols(predict(iris_ranger, iris_testing)) %>% 
+  bind_cols(select(iris_testing, Species)) %>% 
+  glimpse()
+```
+
+Piping the result into `metrics()`:
+
+```{r}
+predict(iris_ranger, iris_testing, type = "prob") %>%
+  bind_cols(predict(iris_ranger, iris_testing)) %>%
+  bind_cols(select(iris_testing, Species)) %>%
+  metrics(Species, .pred_setosa:.pred_virginica, estimate = .pred_class)
+```
 
