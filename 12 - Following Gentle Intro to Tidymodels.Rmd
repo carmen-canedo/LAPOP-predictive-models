@@ -26,7 +26,7 @@ Tidymodels is a group of packages that doesn't implement the statistical models 
 # Iris Example
 Loading in `tidymodels` also loads in `dplyr` and `ggplot` along with other packages from `tidyverse`, so in this case `tidymodels` is the only package we need to load.
 
-```{r}
+```{r, message=FALSE}
 library(tidymodels)
 ```
 
@@ -124,4 +124,55 @@ iris_rf <- rand_forest(trees = 100, mode = "classification") %>%
 
 iris_rf
 ```
+
+## Predictions
+The `predict()` function ru against a `parsnip` model returns a *tibble*. By default the prediction variable is called `.pred_class`. _baked testing data is used below_.
+
+```{r}
+predict(iris_ranger, iris_testing)
+```
+
+You can add predictions to the _baked_ testing data using `bind_cols()`.
+
+```{r}
+iris_ranger %>% 
+  predict(iris_testing) %>% 
+  bind_cols(iris_testing) %>% 
+  glimpse()
+```
+
+## Model Validation
+`metrics()` function measures the performance of the model. It automatically chooses metrics appropriate for a given type of model. The function *expects a tibble* that contains the actual results (`truth`) and what the model predicted (`estimate`)
+
+```{r}
+iris_ranger %>% 
+  predict(iris_testing) %>% 
+  bind_cols(iris_testing) %>% 
+  metrics(truth = Species, estimate = .pred_class)
+```
+
+You can measure the same metrics against the `randomForest` model by replacing the model variable at the top of the code.
+
+```{r}
+iris_rf %>% 
+  predict(iris_testing) %>% 
+  bind_cols(iris_testing) %>% 
+  metrics(truth = Species, estimate = .pred_class)
+```
+
+### Per classifier metrics
+To get the probability for each possible predicted value, set the `type` argument to `prob`. This returns a tibble with as many variables as there are possible predicted values. Name defaults to the original value name, prefixed with `.pred_`
+
+```{r}
+iris_ranger %>% 
+  predict(iris_testing, type = "prob") %>% 
+  glimpse()
+```
+
+Use `bind_cols()`to add predictions to the baked testing dataset. 
+
+
+
+
+
 
