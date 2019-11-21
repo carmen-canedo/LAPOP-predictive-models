@@ -1,9 +1,0 @@
----
-title: "11 - Reading MDSR Chapter 8"
-output: html_notebook
-editor_options: 
-  chunk_output_type: inline
----
-
-# Chapter 8 - Staistical Learning and Predictive Analysis
-
