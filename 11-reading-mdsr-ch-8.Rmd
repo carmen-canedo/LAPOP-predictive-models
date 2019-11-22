@@ -208,4 +208,33 @@ Delta Airines has reasonable performance. These analyses hint that a policy migh
 
 7.5 Statistical models: Explaining variation
 
+In the previous section, we used month of the year and airline to narrow down the situations in which the risk of an unacceptable flight delay is large. Another way to think about this is that we are explaining part of the variation in arrival delay from flight to flight.
+
+*Statistical modeling* provides a way to relate variables to one another. Doing so helps us better understand the system we are studying.
+
+To illustrate modeling, let's consider another question from the airline delays dataset:
+
+What impact, if any, does scheduled time of departure have on expected flight delay?
+
+Many people think that earlier flights are less likely to delayed, since flight delays tend to cascade over the course of the day.
+
+Is this theory supported by the data?
+
+We first begin by considering the time of day. In the `nycflights13` package, the `flights` data frame has a variable (hour) that specifies the **scheduled** hour of departure.
+
+```{r}
+tally(~ hour, data = SF)
+```
+
+We see that many flights are scheduled in the early to mid-morning and from the late afternoon to early evening. None are scheduled before 5am or after 10pm.
+
+Let's examine how the arrival delay depends on the house.
+
+We'll do this in two ways:
+1. Using standard box-and-whisker plots to show the distribution of arrival delays
+2. Using a linear model that lets us track the mean arrival delay over the course of the day.
+
+```{r}
+
+```
 
