@@ -112,3 +112,42 @@ rbind(trials %>%
 
 * Larger sample sizes produce a standard error that is smaller, and it is therefore more reliable.
 * Larger sample sizes tend to result in a bell-shaped distribution
+
+# 7.3 The bootstrap
+*The bootstrap* is a statistical method that allows us to approximate the sampling distribution even without access to the population.
+
+With bootstrap, we think of the sample as the population. Through *resampling* we will draw a new sample from an existing sample but **with replacement**.
+
+```{r}
+small <- sample_n(SF, size = 3, replace = TRUE)
+```
+
+Let's use bootstrapping to find the reliability of the mean arrival time calculated on a sample size of 200. 
+```{r}
+n <- 200
+original_sample <- SF %>% 
+  sample_n(size = n, replace = FALSE)
+```
+
+From this sample, we'll draw all of the resamples and calculate the mean arrival delay.
+```{r}
+bootstrap_trials <- do(500) *
+  mean(~ arr_delay, data = sample_n(original_sample, size = n, replace = TRUE))
+favstats(~ mean, data = bootstrap_trials)
+```
+
+We can calculate the 98th percentile from our sample of size n = 100 flights, and use bootstrapping to see how reliable that sample statistic is.
+
+```{r}
+qdata(~ arr_delay, p = 0.98, data = original_sample)
+```
+
+We can check the reliability of that estimate using bootstrapping.
+```{r}
+bootstrap_trials <- do(500) * 
+  qdata(~ arr_delay, p = 0.98,
+        data = sample_n(original_sample, size = n, replace = TRUE))
+
+favstats(~ quantile, data = bootstrap_trials)
+```
+
