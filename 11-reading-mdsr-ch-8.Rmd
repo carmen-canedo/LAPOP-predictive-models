@@ -13,6 +13,7 @@ library(tidyverse)
 library(nycflights13)
 ```
 
+# 7.1
 ## Example: Sampling from the population
 A traveler has a meeting in San Francisco (SFO) at time **t**. Try to find how much earlier than **t** an acceptable flight shoudl arrive in order to avoid being late to the meeting due to a flight delay.
 
@@ -67,3 +68,47 @@ Now we know that it should have been about 150 minutes.
 In the future when we don't have access to population, how can we find the 98th percentile with *only* the sample?
 
 
+# 7.2 Sample Statistics
+A more reliable sample statistic would be using the median. We ultimately want to know how well the sample statistic reflects the population.
+
+## The sampling distribution
+IF we draw many different samples from the population, each of size n, and calculated the sample statistic on each of those samples, how similar would the sample statistic be across all the samples?
+
+```{r}
+n <- 25
+mean(~ arr_delay, data = sample_n(SF, size = n, replace = FALSE))
+```
+
+Now we need to repeat it multiple times.
+```{r}
+trials <- do(500) *
+  mean(~ arr_delay, data = sample_n(SF, size = n, replace = FALSE))
+
+head(trials)
+```
+
+Now that we have the average for 500 trails, let's examine how spread out the results are.
+```{r}
+favstats(~ mean, data = trials)
+```
+Here is the same thing with large sample size - n = 100.
+```{r}
+trials_100 <- do(500) *
+  mean(~ arr_delay, data = SF %>% 
+         sample_n(size = 100, replace = FALSE))
+```
+
+Histograms of both sample sizes
+```{r}
+rbind(trials %>% 
+        mutate(n = 25),
+      trials_100 %>% 
+        mutate(n = 100)) %>% 
+  ggplot(aes(x = mean)) +
+  geom_histogram(bins = 30) +
+  facet_grid(~ n) +
+  xlab("Sample mean")
+```
+
+* Larger sample sizes produce a standard error that is smaller, and it is therefore more reliable.
+* Larger sample sizes tend to result in a bell-shaped distribution
