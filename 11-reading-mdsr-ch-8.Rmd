@@ -151,3 +151,61 @@ bootstrap_trials <- do(500) *
 favstats(~ quantile, data = bootstrap_trials)
 ```
 
+The bootstrapped standard error is about 18 minutes. This would be unlikely to hit the target, and in this case even increaing the sample to 10,000 cases.
+
+7.4 Outliers
+One place where more data is helpful is in identifying outliers. Suppose we consider any flight delayed by 420 minutes (7 hours) or more as extreme.
+
+```{r}
+SF %>% 
+  filter(arr_delay >= 420) %>% 
+  select(month, day, dep_delay, arr_delay, carrier)
+```
+
+Most of the very long delays were in July, and Virgin America (VX) is the most frequent offender. Immediately this suggests one possible route for impoving the outcome of the business travel policy - we could tell people to arrive extra early in July and to avoid VX.
+
+However, these outliers can be misleading, as they only account for a small fraction of flights into SFO in 2013.
+
+*Outliers should never be dropped unless tehre is a clear rationale.*
+
+*If outliers are dropped, this should be clearly reported.*
+
+Histogram without the outliers.
+```{r}
+SF %>% 
+  mutate(long_delay = arr_delay > 60) %>% 
+  tally(~ long_delay | month, data = .)
+```
+
+The large majority of flights arrive without any delay or a delay less than 60 minutes. We might be able to identify patterns for when the longer delays are likely to occur.
+
+The 14 outliers suggested that month or carrier may be linked to long delays. Let's see how that plays out with the large majority of data.
+
+```{r}
+SF %>% 
+  mutate(long_delay = arr_delay > 60) %>% 
+  tally(~ long_delay | month, data = .)
+```
+
+We can see that June and July are problem months.
+
+```{r}
+SF %>% 
+  filter(arr_delay < 420) %>% 
+  ggplot(aes(arr_delay)) +
+  geom_histogram(binwidth = 15)
+```
+
+Distribution of flight arrival delays in 2013 for flights to SF from NYC airports that were delayed less than seven hours. The distribution features a long right tail (even after getting rid of the outliers).
+
+```{r}
+SF %>% 
+  mutate(long_delay = arr_delay > 60) %>%
+  tally(~ long_delay | carrier, data = .)
+```
+
+Delta Airines has reasonable performance. These analyses hint that a policy might advise travelers to plan to arrive extra early in June and July and to consider Delta as an airline for travel to SFO.
+
+7.5 Statistical models: Explaining variation
+
+
