@@ -1,9 +1,69 @@
 ---
-title: "11 - Reading MDSR Chapter 8"
+title: "11 - Reading MDSR Chapter 7"
 output: html_notebook
 editor_options: 
   chunk_output_type: inline
 ---
 
-# Chapter 8 - Staistical Learning and Predictive Analysis
+# Chapter 7 - Statistical Foundations
+
+```{r, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(nycflights13)
+```
+
+## Example: Sampling from the population
+A traveler has a meeting in San Francisco (SFO) at time **t**. Try to find how much earlier than **t** an acceptable flight shoudl arrive in order to avoid being late to the meeting due to a flight delay.
+
+```{r}
+View(flights)
+str(flights)
+```
+
+
+Creating the population for this example - all flights that arrived in SFO in 2013.
+```{r}
+SF <- flights %>% 
+  filter(dest == "SFO", !is.na(arr_delay))
+
+View(SF)
+```
+
+Setting sample size to n = 25 cases.
+```{r}
+set.seed(101)
+Sample25 <- SF %>% 
+  sample_n(size = 25)
+```
+
+Looking at results from the sample
+```{r}
+favstats(data = Sample25, ~ arr_delay)
+```
+
+Comparing to population
+```{r}
+favstats(data = SF, ~ arr_delay)
+```
+
+98th percentile of the arrival delays in our data sample:
+```{r}
+qdata(~ arr_delay, p = 0.98, data = Sample25)
+```
+
+Testing to see if this policy would have worked by using the population data
+```{r}
+tally(~ arr_delay < 90, data = SF, format = "proportion")
+```
+This shows that our policy misses the mark 5% of the time - which is worse than intended. We need to increase it from 90 minutes but to what??
+
+Since we have the population, you can calculate the 98th percentile of arrival delays
+```{r}
+qdata(~ arr_delay, p = 0.98, data = SF)
+```
+Now we know that it should have been about 150 minutes.
+
+In the future when we don't have access to population, how can we find the 98th percentile with *only* the sample?
+
 
