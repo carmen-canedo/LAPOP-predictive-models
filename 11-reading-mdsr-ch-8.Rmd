@@ -11,6 +11,7 @@ editor_options:
 library(mdsr)
 library(tidyverse)
 library(nycflights13)
+library(lubridate)
 ```
 
 # 7.1
@@ -235,6 +236,111 @@ We'll do this in two ways:
 2. Using a linear model that lets us track the mean arrival delay over the course of the day.
 
 ```{r}
+SF %>% 
+  ggplot(aes(x = hour, y = arr_delay)) +
+  geom_boxplot(alpha = 0.1, aes(group = hour)) +
+  geom_smooth(method = "lm") +
+  xlab("Scheduled hour of departure") +
+  ylab("Arrival delay (minutes)") +
+  coord_cartesian(ylim = c(-30, 120))
+```
 
+The average arrival delay increases over the course of the day - this is a regression model.
+
+```{r}
+mod1 <- lm(arr_delay ~ hour, data = SF)
+msummary(mod1)
+```
+Now we can build a model that includes variables we want to use to explain arrival delay.
+
+The numbers in the "estimate" column for hour indicates that the arrival delay increases by 2 minutes every hour.
+
+Standard error = 0.09 minutes per hour.
+
+P-values < 0.05 mean that random, accidental patterns would be unlikely to generate an estimate as large as that observed. It rules out the possibility that the 2min/hr increase in arrival delay is just an accidental pattern.
+
+What other factors could explain the delays?
+
+Going to look at departure airport, carrier, month, and day. Also going to create variable season that summarizes what we already know about the month
+
+These are *explanatory variables* to account for *response variables*.
+
+```{r}
+SF <- SF %>% 
+  mutate(day = ymd(paste0(year, "-", month, "-", day)),
+         dow = as.character(wday(day, label = TRUE)),
+         season = ifelse(month %in% 6:7, "summer", "other month"))
+```
+
+Building model
+```{r}
+mod2 <- lm(arr_delay ~ hour +
+             origin +
+             carrier +
+             season +
+             dow,
+             data = SF)
+
+msummary(mod2)
+```
+The numbers in the "estimate" column tell us that we should add 4.2 minutes to the average delay if departing from JFK (instead of EWR - Newark).
+
+Further analysis on pg. 162
+
+*Liner models* describe how the mean of the response variable varies with the explanatory variables. This is the most widely used statistical model, but there are others!!
+
+# 7.6 Confounding and accounting for other factors
+When using observational data, it's important to check for confounding variables.
+
+## Example
+Using data on average teacher salaries and average total SAT scores for the 50 states, determine if higher teacher salaries are associated with better outcomes on the test at the state level. If so, should we adjust salaries to improve test performance?
+
+```{r}
+#SAT results by state in the year 2010
+SAT_2010 <- SAT_2010 %>% 
+  #Changing salary to manageable size
+  mutate(Salary = salary/1000)
+
+#Creating scatterplot of average SAT scores by average teacher salaries (in thousands of dollars)
+sat_plot <- SAT_2010 %>% 
+  ggplot(aes(x = Salary, y = total)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ylab("Average total score on the SAT") +
+  xlab("Average teacher salary")
+
+sat_plot
+```
+
+
+```{r}
+#Making the linear model
+sat_mod1 <- lm(total ~ Salary, data = SAT_2010)
+msummary(sat_mod1)
+```
+
+```{r}
+favstats(~ sat_pct, data = SAT_2010)
+```
+
+!! The percentage of students who take the SAT varies by 90% depending on the state.
+
+Going to divide states into 2 groups: low and high.
+```{r}
+SAT_2010 <- SAT_2010 %>% 
+  mutate(SAT_grp = ifelse(sat_pct <= 27, "Low", "High"))
+
+tally(~ SAT_grp, data = SAT_2010)
+```
+
+Scatterplot of avg. SAT scores versus avg. teacher salaries (in thousands of dolalrs) for the 50 states in 2010, stratified by the percentage of students taking the SAT in each state.
+```{r}
+sat_plot %+% 
+  SAT_2010 +
+  aes(color = SAT_grp)
+```
+
+```{r}
+coef(lm(total ~ Salary, data = filter(SAT_grp == "Low")))
 ```
 
