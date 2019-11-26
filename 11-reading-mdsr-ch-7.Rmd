@@ -341,6 +341,36 @@ sat_plot %+%
 ```
 
 ```{r}
-coef(lm(total ~ Salary, data = filter(SAT_grp == "Low")))
+coef(lm(total ~ Salary, data = filter(SAT_2010, SAT_grp == "Low")))
+
+coef(lm(total ~ Salary, data = (filter(SAT_2010, SAT_grp == "High"))))
+```
+For each of the groups, the average teacher salary is positively associated with average SAT score, but when we collapse over this variable, avg. teacher salary is negatively associated with avg. SAT score. 
+
+This form of confounding is a quantitative version of **Simpson's paradox**
+
+1. Among states with a low percentage taking the SAT, teacher salaries and SAT scores are positively associated.
+
+2. Among states with a high percentage taking the SAT, teacher salaries and SAT scores are positively associated. 
+
+3. Among all states, salaries and SAT scores are negatively associated.
+
+You can avoid this confounding by stratification (above) or multiple regression.
+
+```{r}
+sat_mod2 <- lm(total ~ Salary + sat_pct, data = SAT_2010)
+
+msummary(sat_mod2)
 ```
 
+The slope for salary is positive and statistically significant when we control for sat_pct, but we still can't really conclude that teacher salaries cause improvements in SAT scores. 
+
+7.7 The perils of p-values
+
+*p-value* is the probability of seeing a sample statistic as extreme (or more extreme) than the one that was observed if it were really the case that patterns in the data are a result of random change. 
+
+*null hypothesis* assumes that all data is random.
+
+For the SAT and salary example, the null hypothesis would be that the population regression coefficient  (slope) is 0.
+
+When using *hypothesis testing* analysts declare results with a p-value of alpha = 0.05 or smaller *statistically significant*, and larger non-significant.
