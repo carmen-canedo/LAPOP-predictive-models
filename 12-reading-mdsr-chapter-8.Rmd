@@ -8,7 +8,7 @@ editor_options:
 # Chapter 8
 ## Statistical learning and predictive analytics
 
-Graphics work well when tehre are two or three variables involved. We will now be looking at models outside of a regression framework.
+Graphics work well when there are two or three variables involved. We will now be looking at models outside of a regression framework.
 
 The idea that a general specification for a model could be turned to a specific data set automatically has led to the field of *machine learning*.
 
@@ -40,7 +40,9 @@ The dot to the right means "use all the available variables (except the output)"
 
 There are several different goals that might motivate constructing a function.
   + *Predict the output given an input.* It is February, what will the temperature be? Or on June 15th in Northampton, Massachusetts, U.S.A. (latitude 42.3 deg N), how many hours of daylight will there be?
+  
   + *Determine which variables are useful inputs.* It is obvious from experience that temperature is a function of season. But in less familiar situations, e.g., predicting diabetes, the relevant inputs are uncertain or unknown.
+  
   + *Generate hypotheses.* For a scientist trying to figure out the causes of diabetes, it can be useful to construct a predictive model, then look to see what variables turn out to be related to the risk of developing this disorder. 
     ++ You might find that diet, age, and blood pressure are risk factors. Socioeconomic status is not a direct cause of diabetes, but it might be that there is an association through factors related to the accessibility of health care. 
     ++ That is a **hypothesis**, and one that you probably would not have thought of before finding a function relating risk of diabetes to those inputs.
@@ -50,3 +52,8 @@ There are several different goals that might motivate constructing a function.
 Depending on your motivation, the kind of model and the input variables my differ.
 
 In understanding how a system works, the variables you use should be related to the actual, causal mechanisms involved, e.g., the genetics of diabetes. For predicting an output, it hardly matters what the casual mechanisms are. Instead, all that's required is that the inputs are known at a time *before* the prediction is to be made. 
+
+## 8.2 Classifiers
+A logistic regression model takes a set of *explanatory variables* and converts them into a probability.
+
+The analyst specifies the form of the relationship and what kind of variables are included.
