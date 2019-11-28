@@ -57,3 +57,22 @@ In understanding how a system works, the variables you use should be related to 
 A logistic regression model takes a set of *explanatory variables* and converts them into a probability.
 
 The analyst specifies the form of the relationship and what kind of variables are included.
+
+*Classifers* serve as models for categorical response variables (see notes for mathematical explanation)
+
+Classifiers are an important complement to regression models - while regression models have a **quantitative response variable** and can be visualized on a geometric surface, classification models have a **categorical response variable** and are often visualized as a discrete surface (i.e., a tree).
+
+### 8.2.1 Decision trees
+A decision tree assigns class labels to individual observations.
+
+Each branch of the tree separates the records in the data set into increasingly "pure" (homogenous) subsets -- in the sense that they are *more likely to share the same class label.*
+
+The number of possible decision tress grows exponentially with respect to the number of variables, p.
+
+There isn't really an efficient algorithm to determine the optimal decision tree.
+
+This book uses **recursive partitioning** decision trees using the package `rpart`.
+
+The partitioning in a decision tree follow's Hunt's aglorithm, which is recursive.
+
+Suppose we are somwhere in the decision tree
