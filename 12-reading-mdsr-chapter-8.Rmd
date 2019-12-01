@@ -75,4 +75,84 @@ This book uses **recursive partitioning** decision trees using the package `rpar
 
 The partitioning in a decision tree follow's Hunt's aglorithm, which is recursive.
 
-Suppose we are somwhere in the decision tree
+A decision tree works by running this algorithm on the full training data set.
+
+What does it mean to say that a set of records is "purer" than another set? Two popular methods for measuring purity of a set cadidate child nodes are the *Gini coefficient* and the *information gain*. Both are implemented in `rpart()`, which uses the Gini measurement by default.
+
+8.2.2 Example: High-earners in the 1994 United States
+
+A marketing analyst might be interested in finding factors that can be used to predict whether a potential customer is a high-earner. The 1994 United States Census provides information that can inform such a model, with records from 32,561 adults that include a binary variable indicating whether each person makes greater or less thatn $50,000. *This is our response variable*
+
+```{r}
+#Reading in data and saving to object
+census <- read.csv(  "http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data",  header = FALSE) 
+
+#Adding column names
+names(census) <- c("age", "workclass", "fnlwgt", "education",  "education.num", "marital.status", "occupation", "relationship",  "race", "sex", "capital.gain", "capital.loss", "hours.per.week",  "native.country", "income") 
+
+glimpse(census)
+```
+
+First, we will separate our data set into two pieces by separating the rows at random.
+
+A sample with 80% of the rows will become the **training** data set, and the remaining 20% will be the **testing** data set.
+
+```{r}
+#Setting the seed
+set.seed(364)
+
+#Assigning row length to object n
+n <- nrow(census)
+
+#Creating testing data set
+test_idx <- sample.int(n, size = round(0.2 * n))
+
+#Creating training data set
+train <- census[-test_idx, ]
+
+#Number of rows in training data set
+nrow(train)
+
+#Reassigning test data set
+test <- census[test_idx, ]
+nrow(test)
+```
+
+Note that only about 24% of those in the sample make more than $50k.
+
+Thus, the **accuracy** of the **null model** is about 76% since we can get that many right by just predicting that everyone makes less than $50k.
+
+```{r}
+tally(~income, data = train, format = "percent")
+```
+
+```{r}
+library(rpart)
+rpart(income ~ capital.gain, data = train)
+```
+
+Although nearly 80% of those who paid less than 5095.5 dollars in capital gains tax made less than $50k, about 95% of those who paid **more**. Thus, partitioning the recods according to this criterion helps to divide them into relatively purer subsets.
+
+```{r}
+#Setting point of partition
+split <- 5095.5
+
+#Adding new column
+train <- train %>% 
+  mutate(hi_cap_gains = capital.gain >= split)
+
+ggplot(data = train, aes(x = capital.gain, y = income)) +
+  geom_count(aes(color = hi_cap_gains),
+             position = position_jitter(width = 0, height = 0.1), alpha = 0.5) +
+  geom_vline(xintercept = split, color = "dodgerblue", lty = 2) +
+  scale_x_log10(labels = scales::dollar)
+```
+Thus, this decision tree uses a single variable (`capital.gains`) to partition the data set into two parts: those who paid more than 5095.5 dollars in capital gains, and those who did not.
+
+For the former-who make up 0.951 of all observations-we get 79.4% right by predicting that they made less than $50k.
+
+For the latter, we get 95% right by predicting that they made more than $50k.
+
+Thus, our overall accuracy jumps to 80.1%, easily besting the 75.7% in the null model.
+
+How did the algorithm now to pick $5095
