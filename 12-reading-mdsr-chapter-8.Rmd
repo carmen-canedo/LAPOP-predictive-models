@@ -155,4 +155,16 @@ For the latter, we get 95% right by predicting that they made more than $50k.
 
 Thus, our overall accuracy jumps to 80.1%, easily besting the 75.7% in the null model.
 
-How did the algorithm now to pick $5095
+How did the algorithm now to pick $5095 as the threshold value?
+
+It tried all of the sensible values, and this was the one that lowered the Gini coefficient the most.
+
+So far we've only used one variable, but we can build a decision tree for income in terms of all of the other variables in the dataset.
+
+```{r}
+form <- as.formula("income ~ age + workclass + education + marital.status + occupation + relationship + race + sex + capital.gain + capital.loss + hours.per.week")
+
+mod_tree <- rpart(form, data = train)
+mod_tree
+```
+
