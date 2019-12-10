@@ -1,0 +1,40 @@
+---
+title: "13-chapter8-extended-example"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# 8.5 Extended example: Who has diabetes?
+Consider the relationship between age and diabetes. The risk of contracting diabetes increases with age and is associated with many factors. 
+
+Age does not suggest a way to avoid diabetes: you cannot change your age. However, you can change things like diet, physical fitness, etc.
+
+Knowing what is predictive of diabetes can be helpful in practice to design an efficient screening program to test people for the disease.
+
+Let's start simply. What is the relationship between age, body-mass index (BMI), and diabetes for adults surveyed in NHANES?
+
+```{r}
+library(NHANES)
+
+people <- NHANES %>% 
+  select(Age, Gender, Diabetes, BMI, HHIncome, PhysActive) %>% 
+  na.omit()
+
+glimpse(people)
+
+tally(~ Diabetes, data = people, format = "percent")
+```
+
+Below, we illustrate the use of a decision tree using all of the variables **except** household income. It appears that older people, and those with higher BMIs, are more likely to have diabetes.
+
+```{r}
+whoIsDiabetic <- rpart(Diabetes ~ Age + BMI + Gender + PhysActive,
+                       data = people,
+                       control = rpart.control(cp = 0.005, minbucket = 30))
+
+whoIsDiabetic
+
+plot(as.party(whoIsDiabetic))
+```
+
