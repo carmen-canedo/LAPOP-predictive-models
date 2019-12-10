@@ -326,3 +326,76 @@ importance(mod_forest) %>%
 ```
 
 A model object of class `randomForest` also has a `predict()` method for making new predictions.
+
+### 8.2.5 and 8.2.6
+Didn't seem to quite apply
+
+### 8.2.7 Artificial neural networks
+An *artificial neural network* is another classifier.
+
+```{r}
+library(nnet)
+
+mod_nn <- nnet(form, data = train, size = 5)
+```
+
+A neural network is a directed graph that proceeds in stages.
+
+First, there is one node for each input variables. In this case, because each factor level counts as its own variable, there are 57 input variables.
+
+Next, there are a series of nodes specified as a **hidden** layer. In this case, we have specified five nodes for the hidden layer. Each of the input variables are connected to these hidden nodes. Each of the hidden nodes is connected to the single output variable. In addition, `nnet()` adds two control nodes, the first of which is connected to the five hidden nodes, and the latter is connected to the output noode.
+
+The total number of edges is thus $ pk + k + k + 1 $, where k is the number of hidden nodes. In this case, there are $ 57 * 5 + 5 + 5 + 1 = 296 $ edges.
+
+The algorithm iteratively searches for the optimal set of weights for each edge.
+
+Once the weights are computed, the neural network can make predictions for new inputs by running these values through the network.
+
+```{r}
+income_nn <- predict(mod_nn, newdata = train, type = "class")
+
+confusion <- tally(income_nn ~ income, data = train, format = "count")
+
+confusion
+
+sum(diag(confusion)) / nrow(train)
+```
+
+## 8.3 Ensemble methods
+Not really sure about this one. Combe back to later? Seems more advanced.
+
+## 8.4 Evaluating models
+
+How do you know if your model is a good one?
+
+This section outlines some of the concepts in model evaluation - a critical step in predictive analytics.
+
+### 8.4.1 Cross-validation
+One of the easiest traps to fall into is **overfitting**.
+
+Every model discussed in this chapter is **fit** to a set of data. That is, given a set of **training** data and the specification for the type of model (e.g., decision tree, artifical neural network, etc.), each algorithm will determine the optimal set of parameters for the model and those data.
+
+However, if the model works well on those training data, but not so well on a set of **testing** data - that the model has never seen - then the model is said to be *overfit*.
+
+Perhaps the most elementary mistake in predicitive analytics is to overfit your model to the training data, only to see it later perform miserably on the testing set.
+
+In predictive analytics, data sets are often divided into two sets:
+
+*Training* The set of data on which you **build** your model
+
+*Testing* Once your model is built, you test it by evaluating it against data that it has not previously seen.
+
+For example, in this chapter we set aside 80% of the observations to use as a training set, but held back another 20% of testing.
+
+The 80/20 scheme employed is one of the simplest possible, but there are many more complicated schemes.
+
+Another approach to combat this problem is *cross-validation*.
+
+To perform a 2-fold-cross-validation:
+1. Randomly separate your data by rows into two data sets with the same number of observations. Let's call them X1 and X2.
+
+2. Build your model on the data in X1, and then run the data in X2 through your model. How well does it perform? Just because your model performs well on X1 (**in-sample testing**), does not imply that it will perform as well on the data in X2 (**out-of-sample testing**)
+
+3. Now reverse the roles of X1 and X2, so that the data in X2 is used for training, and the data in X1 is used for testing.
+
+4. If your first model is overfit, then it will likely not perform as well on the second set of data.
