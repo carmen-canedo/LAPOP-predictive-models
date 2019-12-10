@@ -399,3 +399,34 @@ To perform a 2-fold-cross-validation:
 3. Now reverse the roles of X1 and X2, so that the data in X2 is used for training, and the data in X1 is used for testing.
 
 4. If your first model is overfit, then it will likely not perform as well on the second set of data.
+
+### 8.4.2 Measuring prediction error
+For evaluating models with a quantitative resposne, there are a variety of criteria that are commonly sused. There are three of the simplest and most common.
+
+The following presumes a vector of real observations denoted y and a corresponding vector of prediction yhat:
+
+*RMSE* Root mean squared error is probably the most common (there's an equation for it)
+
+It is in the same units as the response variable  y, it captures both over and underestimates equally, and it penalizes large misses heavily.
+
+*MAE* Mean absolute error is similar to the RMSE, but does not penalize large misses as heavily
+
+*Correlation*
+
+### 8.4.3 Confusion matrix
+For classifiers, we have already seen the confusion matrix, which is a common way to asses the effectiveness of the model.
+
+### 8.4.4 ROC Curves
+Recall that each of the classifiers we have discussed are capable of producing not only a binary class label, but also the predicted probability of belonging to either class.
+
+Rounding the probabilities the usual way (using 0.5 as a threshold) is not a good idea, since the average probability might not be anywhere near 0.5, and thus we could have far too many predictions in one class.
+
+A principled way approach to assessing the quality of a classifier is a *receiver operating characteristic* curve.
+
+This considers all possible threshold values for rounding, and graphically displays the trade-off between **sensitivity** (the true positive rate) and **specificity** (the true negative rate). 
+
+What is actually plotted is the true postive rate as a function of the *false positive rate*. These can be constructed using `ROCR`. Note that ROC curves operate on the fitter probabilities in (0,1).
+
+Review code when ready.
+
+Going to start looking at extended example in a new notebook.
