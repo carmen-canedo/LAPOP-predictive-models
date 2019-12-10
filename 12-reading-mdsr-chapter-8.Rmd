@@ -79,7 +79,7 @@ A decision tree works by running this algorithm on the full training data set.
 
 What does it mean to say that a set of records is "purer" than another set? Two popular methods for measuring purity of a set cadidate child nodes are the *Gini coefficient* and the *information gain*. Both are implemented in `rpart()`, which uses the Gini measurement by default.
 
-8.2.2 Example: High-earners in the 1994 United States
+### 8.2.2 Example: High-earners in the 1994 United States
 
 A marketing analyst might be interested in finding factors that can be used to predict whether a potential customer is a high-earner. The 1994 United States Census provides information that can inform such a model, with records from 32,561 adults that include a binary variable indicating whether each person makes greater or less thatn $50,000. *This is our response variable*
 
@@ -230,3 +230,99 @@ Note that as we add more splits to our model, the relative error decreases.
 printcp(mod_tree)
 ```
 
+An important tool in verifying a model's accuracy is called the *confusion matrix*.
+
+This is a two-way table that counts how often our model made the correct prediction.
+
+Note that there are two different types of mistakes that our model can make:
+  + Predicting a high income when the income was in fact low
+  + Predicting a low income when the income was in fact high
+  
+```{r}
+train <- train %>% 
+  mutate(income_dtree = predict(mod_tree, type = "class"))
+
+confusion <- tally(income_dtree ~ income, data = train, format = "count")
+
+confusion
+
+sum(diag(confusion)) / nrow(train)
+```
+  
+In this case, the accuracy of the decision tree classifier is now 84.6%, a considerable improvement over the null model.
+
+### 8.2.3 Tuning parameters
+
+The decision tree that we built above was based on the default parameters.
+
+Most notably, our tree was pruned so that only splits that decreased the overall lack of fit by 1% were retained.
+
+If we lower this threshold to 0.2%, then we get a more complex tree.
+
+```{r}
+mod_tree2 <- rpart(form, data = train, control = rpart.control(cp = 0.002))
+```
+
+Now we need to see if this is more or less accurate than our original tree.
+
+```{r}
+train2 <- train %>% 
+  mutate(income_dtree = predict(mod_tree2, type = "class"))
+
+confusion2 <- tally(income_dtree ~ income, data = train2, format = "count")
+
+confusion2
+
+sum(diag(confusion2)) / nrow(train)
+```
+
+This returns 86.3% accuracy, so it is less accurate than the original.
+
+### 8.2.4 Random Forests
+
+A natural extension of a decision tree is a *random forest* - a collection of decision trees that are aggregated by majority rule. 
+
+#### Construction of a random forest:
+1. Choosing the number of decision trees to grow (controlled by the `ntree` argument) and the number of variables to consider in each tree (`mtry`)
+
+2. Randomly selecting the rows of the data frame **with replacement**
+
+3. Randomly selecting `mtry` variables from the data frame
+
+4. Buidling a decision tree on the resulting data set
+
+5. Repeating this procedure `ntree` times
+
+A prediction for a new observation is made by taking the majority rule from all of the decision trees in the forest.
+
+```{r, message=FALSE}
+library(randomForest)
+
+mod_forest <- randomForest(form, data = train, ntree = 201, mtry = 3)
+mod_forest
+```
+
+```{r}
+sum(diag(mod_forest$confusion)) / nrow(train)
+```
+
+This means it is 86.6% accurate.
+
+Because each tree in a random forest uses a different set of variables, it is possible to keep track of which variables seem to be the most consistently influential.
+
+This is captured by the notion of *importance*.
+
+Wihle there is no formal statistical inference here, importance can help to generate hypotheses.
+
+Here, we see that `capital.gain` and `age` seem to be influential, while `race` and `sex` do not.
+
+```{r}
+library(tibble)
+
+importance(mod_forest) %>% 
+  as.data.frame() %>% 
+  rownames_to_column() %>% 
+  arrange(desc(MeanDecreaseGini))
+```
+
+A model object of class `randomForest` also has a `predict()` method for making new predictions.
