@@ -34,7 +34,7 @@ Here, the variable `diabetic` is marked as the output, simply because it is on t
 
 You can also see:
 
-`diabetc ~ .`
+`diabetic ~ .`
 
 The dot to the right means "use all the available variables (except the output)". The object above has class `formula`.
 
@@ -166,5 +166,67 @@ form <- as.formula("income ~ age + workclass + education + marital.status + occu
 
 mod_tree <- rpart(form, data = train)
 mod_tree
+```
+
+In this more complicated tree, the optimal first split now does not involve `capital.gain`, but rather `relationship`. 
+
+A basic visualization of the tree can be created using the `plot()` function from `rpart` package.
+
+```{r}
+plot(mod_tree)
+text(mod_tree, use.n = TRUE, all = TRUE, cex = 0.7)
+```
+
+That's ugly though, lol.
+
+Instead, to make a nicer plot, use `partykit` - it has a series of functions for working with decision trees.
+
+```{r}
+library(partykit)
+#Use show in new window to see clearly
+plot(as.party(mod_tree))
+```
+
+This shows the *the decision tree itself*, whereas before it just shows how the tree recursively partitions the original data.
+
+Here, the first question is whether `relationship` status is Husband or Wife. If not, then a capital gains threshold of $7,073.50 is used to determine one's income.
+
+96.4% of those who paid more than the threshold earned more than $50k, but 94.9% of those who paid less than the threshold did not.
+
+for those whose relationship status was Husband or Wife, the next question was whetehr you had a college degree. If so, then the model predicts with 72.8% accuracy that you made more than $50k.
+
+If not, then again we ask about capital gains tax paid, but this time the threshold is 5095.50. 97.9% of those who were neither a husband nor a wife, and had no college degree, but paid more than that amount in capital gains tax, mae more than 50k. On the other hand, 70% of thosewho paid below the threshold made less than $50k.
+
+```{r}
+train <- train %>% 
+  mutate(husband_or_wife = relationship %in% c("Husband", "Wife"),
+         college_degree = husband_or_wife & education %in% c("Bachelors", "Doctorate", "Masters", "Prof-school"),
+         income_dtree = predict(mod_tree, type = "class"))
+
+cg_splits <- data.frame(husband_or_wife = c(TRUE, FALSE),
+                        vals = c(5095.5, 7073.5))
+
+ggplot(train, aes(x = capital.gain, y = income)) +
+  geom_count(aes(color = income_dtree, shape = college_degree),
+             position = position_jitter(width = 0, height = 0.1),
+             alpha = 0.5) +
+  facet_wrap(~ husband_or_wife) +
+  geom_vline(data = cg_splits, aes(xintercept = vals),
+             color = "dodgerblue", lty = 2) +
+  scale_x_log10()
+```
+
+Since there are exponentially many tress, how did the algorithm know to pick this one?
+
+*Complexity parameter* controls whether to keep or prune possible splits.
+
+The algorithm considers many possible splits (i.e. new branches on the tree), but prunes them if they do not sufficiently improve the predictive power of the model (i.e. bear fruit). By default, each split has to decrease the error by a factor of 1%.
+
+This will help to avoid *overfitting*.
+
+Note that as we add more splits to our model, the relative error decreases.
+
+```{r}
+printcp(mod_tree)
 ```
 
