@@ -1,5 +1,5 @@
 ---
-title: "13-chapter8-extended-example"
+title: "13 - Chapter 8 Extended Example"
 output: html_notebook
 editor_options: 
   chunk_output_type: inline
