@@ -8,6 +8,8 @@ editor_options:
 # Notes frome Modern Data Science with R Chapter 8
 ## Statistical learning and predictive analytics
 
+*These notes are for personal use only.*
+
 Graphics work well when there are two or three variables involved. We will now be looking at models outside of a regression framework.
 
 The idea that a general specification for a model could be turned to a specific data set automatically has led to the field of *machine learning*.

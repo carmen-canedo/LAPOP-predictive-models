@@ -6,6 +6,10 @@ editor_options:
 ---
 
 # 8.5 Extended example: Who has diabetes?
+## From MDSR Chapter 8
+
+*These notes are for personal use only.*
+
 Consider the relationship between age and diabetes. The risk of contracting diabetes increases with age and is associated with many factors. 
 
 Age does not suggest a way to avoid diabetes: you cannot change your age. However, you can change things like diet, physical fitness, etc.
