@@ -38,3 +38,107 @@ whoIsDiabetic
 plot(as.party(whoIsDiabetic))
 ```
 
+If you are 52 or younger, then you very likely do not have diabetes. However, if you are 53 or older, your risk is higher.
+
+If your BMI is above 40 - indicating obesity - then your risk increases again. Strangely - this may be evidence of overfitting - your risk is highest if you are between 61 and 67 years old.
+
+```{r}
+ggplot(data = people, aes(x = Age, y = BMI)) +
+  geom_count(aes(color = Diabetes), alpha = 0.5) +
+  geom_vline(xintercept = 52.5) +
+  geom_segment(x = 52.5, xend = 100, y = 39.985, yend = 39.985) +
+  geom_segment(x = 67.5, xend = 67.5, y = 39.985, yend = Inf) +
+  geom_segment(x = 60.5, xend = 60.5, y = 39.985, yend = Inf) +
+  annotate("rect", xmin = 60.5, xmax = 67.5, ymin = 39.985,
+           ymax = Inf, fill = "blue", alpha = 0.1)
+```
+
+This is a nice way to visualize a complex model. We have plotted our data in two quantitative dimensions (Age and BMI) while using color to represent our binary response variable (Diabetes). 
+
+The decision tree simply partitions this two-dimensional space into axis-parallel rectangles. The model makes the same prediction for all observations within each rectangle.
+
+This provides a clear illustration of the strengths and weaknesses of models based on recursive partitioning. These types of models can **only** produce axis-parallel rectangles in which all points in each rectangle receive the same prediction.
+
+This makes these models relatively easy to understand and apply, but it is not hard to imagine a situation in which they might perform miserably (like what if the relationship was non-linear?)
+
+We can visualize any model in a similar fashion. To do this, we will tile the (Age, BMI)-plane with a fine grid of points
+
+```{r}
+ages <- range(~ Age, data = people)
+bmis <- range(~ BMI, data = people)
+res <- 100
+
+fake_grid <- expand.grid(
+  Age = seq(from = ages[1], to = ages[2], length.out = res),
+  BMI = seq(from = bmis[1], to = bmis[2], length.out = res)
+)
+```
+
+Next we will evaluate each of six models on each grid point, taking care to retieve not the classification itself, but the probability of having diabetes.
+
+```{r}
+form <- as.formula("Diabetes ~ Age + BMI")
+dmod_tree <- rpart(form, data = people,
+                   control = rpart.control(cp = 0.005, minbucket = 30))
+
+dmod_tree
+```
+
+From here I'm going to make a random forest and neural net
+```{r}
+#Textbook uses mtry = 3, but I received an error saying to chose a number in a valid range
+dmod_forest <- randomForest(form, data = people, ntree = 201, mtry = 2)
+dmod_nnet <- nnet(form, data = people, size = 6)
+
+library(e1071)
+dmod_nb <- naiveBayes(form, data = people)
+
+pred_tree <- predict(dmod_tree, newdata = fake_grid)[, "Yes"]
+pred_forest <- predict(dmod_forest, newdata = fake_grid,
+                       typ = "prob")[, "Yes"]
+
+library(class)
+pred_knn <- people %>% 
+  select(Age, BMI) %>% 
+  knn(test = select(fake_grid, Age, BMI), cl = people$Diabetes, k = 5) %>% 
+  as.numeric() - 1
+
+pred_nnet <- predict(dmod_nnet, newdata = fake_grid, type = "raw") %>% 
+  as.numeric()
+
+pred_nb <- predict(dmod_nb, newdata = fake_grid, type = "raw")[, "Yes"]
+```
+
+To evaluate the null model, we'll need the overall percentage of those with diabetes.
+
+```{r}
+p <- tally(~ Diabetes, data = people, format = "proportion")["Yes"]
+```
+
+We next build a data frame with these vectors, and then `pivot_longer()` into a long format.
+
+```{r}
+res <- fake_grid %>% 
+  mutate(
+    "Null" = rep(p, nrow(fake_grid)), "Decision Tree" = pred_tree,
+    "Random Forest" = pred_forest, "k-Nearest Neighbor" = pred_knn,
+    "Neural Network" = pred_nnet, "Naive Bayes" = pred_nb
+  ) %>% 
+  #This differs significantly from the code in the book
+  pivot_longer(cols = -c("Age", "BMI"), names_to = "model", values_to = "y_hat")
+```
+
+The figure below illustrates each model in the data space. The differences between the models are striking. The rigidity of the decision tree is apparent, especially relative to the flexibility of the k-NN model. However, the k-NN model makes bold binary predictions, whereas the random forest has similar flexibility, but more nuance. The null model makes uniform predictions, while the naive Bayes model produces a non-linear horizon simlar to what we would expect from a logistic regression model.
+
+```{r}
+ggplot(data = res, aes(x = Age, y = BMI)) +
+  geom_tile(aes(fill = y_hat), color = NA) +
+  geom_count(aes(color = Diabetes), alpha = 0.4, data = people) +
+  scale_fill_gradient(low = "white", high = "dodgerblue") +
+  scale_color_manual(values = c("gray", "gold")) +
+  scale_size(range = c(0, 2)) +  scale_x_continuous(expand = c(0.02,0)) +
+  scale_y_continuous(expand = c(0.02,0)) +  facet_wrap(~model) 
+```
+
+## 8.7 Further resources
+Look back at book to find free PDFs!

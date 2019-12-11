@@ -5,7 +5,7 @@ editor_options:
   chunk_output_type: inline
 ---
 
-# Chapter 8
+# Notes frome Modern Data Science with R Chapter 8
 ## Statistical learning and predictive analytics
 
 Graphics work well when there are two or three variables involved. We will now be looking at models outside of a regression framework.
