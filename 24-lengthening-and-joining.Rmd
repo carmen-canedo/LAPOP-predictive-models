@@ -160,8 +160,8 @@ lengthen_18factor <- function(country) {
 factor_add <- function(country){
   #Uses left joins to bring together the excel doc and dataframe based on column name
   country <- country %>%
-    left_join(factored_questions, by = 'column_name_factor') %>%
-    left_join(factored_categories, by = 'column_name_factor')
+    full_join(factored_questions, by = 'column_name_factor') %>%
+    full_join(factored_categories, by = 'column_name_factor')
   return(country)
 }
 ```
@@ -171,8 +171,8 @@ factor_add <- function(country){
 unfactor_add <- function(country){
   #Uses left joins to bring together the excel doc and dataframe based on column name
   country <- country %>%
-    left_join(unfactored_questions, by = 'column_name') %>%
-    left_join(unfactored_categories, by = 'column_name')
+    full_join(unfactored_questions, by = 'column_name') %>%
+    full_join(unfactored_categories, by = 'column_name')
   return(country)
 }
 ```

@@ -13,11 +13,33 @@ Familiarizing myself with the questions asked, so I might understand what questi
 
 ```{r, message=FALSE}
 library(janitor)
+library(varhandle)
 ```
 
 ```{r}
 bolivia_clean %>% 
-  tabyl(question_es) %>% 
-  select(question_es)
+  tabyl(question_es)
+```
+
+```{r}
+rm.all.but("bolivia_clean")
+```
+
+```{r}
+numeric_wide <- bolivia_clean %>% 
+  head(2200000) %>% # Get first 100K questions to reduce memory %>%
+  pivot_wider(id_cols = c(person_id_factor, country, wave), 
+              names_from = question_es,
+              values_from = answer_measure)
+```
+
+I had to omit 2 variables, but they were unrelated to the topic, so it works out. My computer otherwise would not have had sufficient memory to widen the data.
+
+```{r}
+labelled_wide <- bolivia_clean %>% 
+  head(2200000) %>% # Get first 100K questions to reduce memory %>%
+  pivot_wider(id_cols = c(person_id_factor, country, wave), 
+              names_from = question_es,
+              values_from = answer_dimension)
 ```
 
