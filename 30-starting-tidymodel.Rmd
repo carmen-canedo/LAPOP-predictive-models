@@ -1,0 +1,34 @@
+---
+title: "30 - Starting Tidymodel"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Structure
+This is the first go at making a decision tree.
+
+I am referencing the article [A Gentle Introduction to tidymodels](https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/) to analyze the data.
+
+# Data Sampling
+```{r, messages=FALSE}
+library(tidymodels)
+```
+
+```{r}
+bolivia_split <- initial_split(labelled_wide, prop = 0.6)
+
+bolivia_split
+```
+
+Viewing the observations in the training dataset
+```{r}
+bolivia_split %>% 
+  training() %>% 
+  glimpse()
+
+bolivia_clean %>% 
+  select("Ideología (Izquierda/Derecha)")
+```
+
+# Pre-process interface
