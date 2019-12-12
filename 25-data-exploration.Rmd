@@ -1,0 +1,23 @@
+---
+title: "25 - Data Exploration"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Structure
+I am now going to explore the tidy version of the 2004-2018 Bolivia data to find factors that influence my question: who is likely to support the MAS party moving forward?
+
+## Reading through questions
+Familiarizing myself with the questions asked, so I might understand what questions and factors could be relevant using `tabyl()`
+
+```{r, message=FALSE}
+library(janitor)
+```
+
+```{r}
+bolivia_clean %>% 
+  tabyl(question_es) %>% 
+  select(question_es)
+```
+

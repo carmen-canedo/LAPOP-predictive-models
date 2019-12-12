@@ -1,0 +1,19 @@
+---
+title: "Joining Data"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Structure
+In this step, I am going to combine the wide versions of Bolivia merged, 2016, and 18 using joins.
+
+```{r}
+bolivia_16_unfactor <- bolivia_16_unfactor %>% 
+  transform(idnum = as.character(idnum))
+bolivia_18_unfactor <- bolivia_18_unfactor %>% 
+  transform(idnum = as.character(idnum))
+test <- union_all(bolivia_unique_unfactor, bolivia_16_unfactor)
+test <- union_all(test, bolivia_18_unfactor)
+```
+
