@@ -18,7 +18,7 @@ Tidymodels is a group of packages that doesn't implement the statistical models 
 * `recipes` - transformations for model data pre-processing
 
 ## Train
-* `parnip` - a common interface for model creation
+* `parsnip` - a common interface for model creation
 
 ## Validate
 * `yardstick` - measure model performance

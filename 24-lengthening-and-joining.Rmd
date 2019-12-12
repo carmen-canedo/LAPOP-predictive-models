@@ -87,13 +87,6 @@ lengthen_18 <- function(country) {
 }
 ```
 
-### Applying functions to datasets
-```{r}
-unfactor <- lengthen(bolivia_unique_unfactor)
-unfactor16 <- lengthen_16(bolivia_16_unfactor)
-unfactor18 <- lengthen_18(bolivia_18_unfactor)
-```
-
 
 ## Functions to lengthen factored versions
 These functions are almost identical to the ones above except, they have "_factor" for the column names.
@@ -159,13 +152,6 @@ lengthen_18factor <- function(country) {
     select(pais_factor, wave_factor, person_id_factor, column_name_factor, answer_dimension, weights_factor)
   return(country)
 }
-```
-
-### Applying for factored Bolivia datasets
-```{r}
-factor <- lengthen_factor(bolivia_unique_factor)
-factor16 <- lengthen_16factor(bolivia_16_factor)
-factor18 <- lengthen_18factor(bolivia_18_factor)
 ```
 
 
