@@ -51,7 +51,8 @@ labelled_wide <- bolivia_clean %>%
 
 ```{r}
 labelled_wide <- labelled_wide %>% 
-  rename(ideology = "Ideología (izquierda / derecha)")
+  rename(ideology = "Ideología (izquierda / derecha)") %>% 
+  clean_names()
 ```
 
 
