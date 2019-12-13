@@ -26,9 +26,25 @@ Viewing the observations in the training dataset
 bolivia_split %>% 
   training() %>% 
   glimpse()
-
-bolivia_clean %>% 
-  select("Ideología (Izquierda/Derecha)")
 ```
 
 # Pre-process interface
+```{r}
+ideology_recipe <- training(bolivia_split) %>% 
+  #Making a recipe object
+  recipe(ideology ~ .) %>% 
+  prep()
+```
+
+```{r}
+ideology_recipe
+```
+
+# Execute the pre-processing
+```{r}
+ideology_testing <- ideology_recipe %>% 
+  bake(testing(bolivia_split))
+```
+
+
+

@@ -22,6 +22,12 @@ bolivia_clean %>%
 ```
 
 ```{r}
+bolivia_clean %>% 
+  filter(question_es == "Ideología (izquierda / derecha)")
+```
+
+
+```{r}
 rm.all.but("bolivia_clean")
 ```
 
@@ -42,4 +48,10 @@ labelled_wide <- bolivia_clean %>%
               names_from = question_es,
               values_from = answer_dimension)
 ```
+
+```{r}
+labelled_wide <- labelled_wide %>% 
+  rename(ideology = "Ideología (izquierda / derecha)")
+```
+
 
