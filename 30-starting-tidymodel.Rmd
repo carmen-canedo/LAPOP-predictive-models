@@ -21,6 +21,12 @@ bolivia_split <- initial_split(labelled_wide, prop = 0.6)
 bolivia_split
 ```
 
+Clearing out some memory
+```{r}
+rm.all.but("bolivia_split")
+```
+
+
 Viewing the observations in the training dataset
 ```{r}
 bolivia_split %>% 

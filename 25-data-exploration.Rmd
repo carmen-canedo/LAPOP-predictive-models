@@ -58,8 +58,16 @@ labelled_wide <- labelled_wide %>%
 
 Changing to NA values
 ```{r}
-labelled_wide[ labelled_wide == c("No Aplica", "No responde", "No Responde", "No sabe", "No Sabe")] <- NA
+#Function to create NA values in Bolivia dataset
+turn_to_NA <- function(country){
+  country <- set_na(country, na = c("No se le preguntó en este país o año", "Not asked in this country or year","No Aplica", "No Sabe", "No sabe", "No Responde", "No responde"), as.tag = TRUE)
+}
 
-#labelled_wide <- labelled_wide %>% 
-  #na.omit()
+#Changing above values to NA
+labelled_wide <- turn_to_NA(labelled_wide)
+
+#Checking to make sure the function worked
+labelled_wide %>% 
+  select(police_bribe) %>% 
+  filter(!is.na(police_bribe))
 ```

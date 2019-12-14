@@ -39,7 +39,7 @@ nrow(train) + nrow(test)
 ```
 
 ```{r}
-tally(~ ideology, data = train, format = "percent")
+tally(~ police_bribe, data = train)
 ```
 
 I am going to try to find a split for ideology based on one variable first, urban vs. rural.
@@ -49,18 +49,18 @@ library(rpart)
 ```
 
 ```{r}
-rpart(ideology ~ urbano_rural, data = train)
+rpart(oficial_de_policia_le_solicito_un_soborno ~ urbano_rural, data = train)
 ```
 
 # !DO NOT USE REFERENCE ONLY
-# ```{r}
-# ggplot(data = train, aes(x = urbano_rural, y = ideology)) +
-#   geom_count(aes(color = urbano_rural),
-# position = position_jitter(width = 0, height = 0.1), alpha = 0.5)
-# ```
+```{r}
+ ggplot(data = train, aes(x = oficial_de_policia_le_solicito_un_soborno, y = urbano_rural)) +
+   geom_count(aes(color = urbano_rural),
+ position = position_jitter(width = 0, height = 0.1), alpha = 0.5)
+```
 
 ```{r}
-formula <- as.formula("ideology ~ .")
+formula <- as.formula("oficial_de_policia_le_solicito_un_soborno ~ .")
 mod_tree <- rpart(formula, data = train)
 ```
 
