@@ -28,28 +28,47 @@ bolivia_split %>%
   glimpse()
 ```
 
-Getting rid of NA's in bribe column
-```{r}
-police_bribe <- labelled_wide %>% 
-  filter(police_bribe == c("Sí", "No"))
-```
-
-
 # Pre-process interface
 ```{r}
 bribe_recipe <- training(bolivia_split) %>% 
   #Making a recipe object
-  recipe(police_bribe ~ .) %>% 
-  prep()
-```
+  recipe(police_bribe ~ .) 
 
-```{r}
 bribe_recipe
 ```
 
+Imputing K Nearest Neighbors
+```{r}
+imputed <- bribe_recipe %>% 
+  step_knnimpute(all_predictors())
+```
+
+Creating numeric dummy variables for categorical variables
+```{r}
+ind_vars <- imputed %>% 
+  step_dummy(all_predictors(), -all_numeric())
+
+ind_vars
+```
+
+All of the predictors are now numeric, so I will now center and scale them.
+```{r}
+standardized <- ind_vars %>% 
+  step_center(all_predictors()) %>% 
+  step_scale(all_predictors())
+
+standardized
+```
+
+Using prep function to estimate the means and standard deviations from the training set.
+```{r}
+trained_recipe <- prep(standardized, training = training(bolivia_split))
+```
+
+
 # Execute the pre-processing
 ```{r}
-ideology_testing <- ideology_recipe %>% 
+_testing <- ideology_recipe %>% 
   bake(testing(bolivia_split))
 ```
 

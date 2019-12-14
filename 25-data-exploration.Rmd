@@ -58,23 +58,8 @@ labelled_wide <- labelled_wide %>%
 
 Changing to NA values
 ```{r}
-no_response <- c("No Aplica", "No responde", "No Responde", "No sabe", "No Sabe")
-```
-
-```{r}
 labelled_wide[ labelled_wide == c("No Aplica", "No responde", "No Responde", "No sabe", "No Sabe")] <- NA
+
+#labelled_wide <- labelled_wide %>% 
+  #na.omit()
 ```
-
-# !Reference only
-```{r}
-labelled_wide <- labelled_wide %>% 
-  mutate(police_bribe = ifelse(police_bribe %in% c("No Aplica", "No responde", "No Responde", "No sabe", "No Sabe"), NA, police_bribe))
-```
-
-```{r}
-labelled_wide %>% 
-  select(police_bribe) %>% 
-  filter(police_bribe == "NA")
-```
-
-
