@@ -28,16 +28,23 @@ bolivia_split %>%
   glimpse()
 ```
 
+Getting rid of NA's in bribe column
+```{r}
+police_bribe <- labelled_wide %>% 
+  filter(police_bribe == c("Sí", "No"))
+```
+
+
 # Pre-process interface
 ```{r}
-ideology_recipe <- training(bolivia_split) %>% 
+bribe_recipe <- training(bolivia_split) %>% 
   #Making a recipe object
-  recipe(ideology ~ .) %>% 
+  recipe(police_bribe ~ .) %>% 
   prep()
 ```
 
 ```{r}
-ideology_recipe
+bribe_recipe
 ```
 
 # Execute the pre-processing

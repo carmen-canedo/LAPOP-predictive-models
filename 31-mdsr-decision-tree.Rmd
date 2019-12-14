@@ -60,6 +60,7 @@ rpart(ideology ~ urbano_rural, data = train)
 # ```
 
 ```{r}
-
+formula <- as.formula("ideology ~ .")
+mod_tree <- rpart(formula, data = train)
 ```
 
