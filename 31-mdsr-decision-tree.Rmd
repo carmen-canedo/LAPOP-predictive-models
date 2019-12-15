@@ -49,22 +49,34 @@ library(rpart)
 ```
 
 ```{r}
-rpart(police_bribe ~ urbano_rural + sexo + edad, data = train, method = "class",
+test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
+      method = "class",
       minsplit = 1,
-      minbucket = 1)
+      minbucket = 1,
+      cp = 0)
 ```
+
+```{r}
+plot(as.party(test))
+```
+
 Only getting one node here.
 
 # !DO NOT USE REFERENCE ONLY
 #```{r}
-# ggplot(data = train, aes(x = oficial_de_policia_le_solicito_un_soborno, y = urbano_rural)) +
+# ggplot(data = train, aes(x = police_bribe, y = urbano_rural)) +
 #   geom_count(aes(color = urbano_rural),
 # position = position_jitter(width = 0, height = 0.1), alpha = 0.5)
 #```
 
 ```{r}
 formula <- as.formula("police_bribe ~ .")
-mod_tree <- rpart(formula, data = train, method = "class", minsplit = 100, minbucket = 1)
+mod_tree <- rpart(formula,
+                  data = train,
+                  method = "class",
+                  minsplit = 1,
+                  minbucket = 1,
+                  cp = -1)
 mod_tree
 ```
 
