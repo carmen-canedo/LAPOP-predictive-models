@@ -78,6 +78,12 @@ labelled_wide <- labelled_wide %>%
 labelled_wide
 ```
 
+Removing this variable because it is not necessary
+```{r}
+labelled_wide <-  labelled_wide %>% 
+  select(-person_id_factor)
+```
+
 
 # !DO NOT USE REFERENCE ONLY
 #```{r}

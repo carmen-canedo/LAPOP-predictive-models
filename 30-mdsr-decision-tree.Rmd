@@ -55,11 +55,11 @@ test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
 ```
 
 ```{r}
-test2 <- test <- rpart(police_bribe ~ urbano_rural + sexo + age, data = train,
+test <- rpart(police_bribe ~ ., data = train,
       method = "class",
-      minsplit = 1,
-      minbucket = 1,
-      cp = 0)
+      minsplit = 4,
+      minbucket = 4,
+      cp = -.001)
 ```
 
 
