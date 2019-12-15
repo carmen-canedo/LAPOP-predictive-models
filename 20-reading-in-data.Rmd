@@ -6,20 +6,22 @@ editor_options:
 ---
 
 # Overall Goals
-Due to the resignation of the Bolivian president, Evo Morales, in October, I am interested in determining the typical supporters of his party, **Movimiento al Socialismo** (MAS), and how participants' support has changed over the past 14 years. In my project, I hope to develop a predictive model that uncovers factors associated with participant’s perception of Evo Morales and satisfaction with the Bolivian government. 
-
-I am also going to use these models to provide a risk-adjusted measure of perception to directly answer whether residents in Bolivia feel more or less satisfied with Morales' administration than expected. I will then discern other factors that might be driving these perceptions that may not be accounted for in the survey data, and hypothesize how factors might be identified if the model predictions improve with the inclusion of new data.
+In this project, I hope to develop a predictive model that uncovers factors associated with crime victimization in Bolivia. I will specifically be delving into the Latin American Public Opinion's project data that has been collected from 2004 - 2018 to analyze who has been asked for a bribe by the Bolivian police based on gender, location, and perceived safety.
 
 
-## Source
-In this file, we read in the data from the [LAPOP Datasets](http://datasets.americasbarometer.org/database/index.php). In order to do this, you need to download them to your machine and place them in this file.
+## Accessing the data
+In this file, I read in the data from the [LAPOP Datasets](http://datasets.americasbarometer.org/database/index.php). In order to do this, you need to download them to your machine and place them in this file.
 
-For this section, I will be referencing and modifying code I wrote as an intern at the Vanderbilt Data Science Institute with Lindsay Hardy and Jesse Spencer-Smith; the Github repository can be found [here](https://github.com/vanderbilt-data-science/lapop-dashboard).
+I have placed the necessary files into a Box folder that I can share as needed.
+
+In the following sections, I will be referencing and modifying code I wrote as an intern at the Vanderbilt Data Science Institute with Lindsay Hardy and Jesse Spencer-Smith; the Github repository can be found [here](https://github.com/vanderbilt-data-science/lapop-dashboard).
 
 ### Factored vs. Unfactored
-The data in the Stata files are factored, meaning that a yes or no question would be entered in as 0 and 1. These numbers are then assigned labels as such: 0 - "yes" and 1 - "no", and we refer to data frames where the labels are visible in the observations as *factored*. When data frames use only the numbered observations, we refer to this as *unfactored*.
+The data in the original Stata files are factored, meaning that a yes or no question would be entered in as 0 and 1. These numbers are then assigned labels as such: 0 - "yes" and 1 - "no", and we refer to data frames where the labels are visible in the observations as *factored*. When data frames use only the numbered observations, we refer to this as *unfactored*.
 
-We chose to use both versions of the data frames for ease of use in Tableau Public. Unfactored data frames allow us to perform calculations in Tableau Public later on, and the factored data frames provide reader-friendly text to the graphics.
+We chose to use both versions of the data frames for ease of use in Tableau Public. Unfactored data frames allowed for us to perform calculations in Tableau Public later on, and the factored data frames provide reader-friendly text to the graphics.
+
+In this case, we will primarly just be using the factored version for analysis, but I have included the unfactored data for reference.
 
 ## Libraries
 These packages contain the functions that are necessary to run the code below. These can be installed using `install.packages()`, and then you should run the code chunk below so they are ready to be used.
@@ -29,6 +31,14 @@ library(sjmisc)
 library(tidyverse)
 library(assertr)
 library(haven)
+library(janitor)
+library(varhandle)
+library(mdsr)
+library(rpart)
+library(partykit)
+library(rattle)
+library(rpart.plot)
+library(RColorBrewer)
 ```
 
 ## Creating factored and unfactored dataframes
@@ -55,7 +65,6 @@ factor_country <- function(country){
 
 ## Bolivia Merged File
 I am using the **most recent** merged country file. Currently, there is no public file with 2016 and 2018 waves merged for Bolivia.
-
 ```{r}
 bolivia_factor <- factor_country("data/merged_bolivia_2004_2014.zip")
 bolivia_unfactor <- read_dta("data/merged_bolivia_2004_2014.zip")
@@ -66,7 +75,7 @@ Because there is no pre-existing merge that includes 2016 data, we are reading i
 
 If you are using a file that has this wave included, you can skip this.
 
-## Creating factored data frame of 2016 questionnaire using `factor16_country`
+### Creating factored data frame of 2016 questionnaire using `factor16_country`
 This is the 2016 version of the `factor_country()` used above. The same process applies, but we have renamed the `uniq_id` column to `person_id` for clarification.
 ```{r}
 factor16_country <- function(country){
@@ -88,20 +97,23 @@ factor16_country <- function(country){
 }
 ```
 
-## Bolivia 2016 File
+### Bolivia 2016 File
 ```{r}
 bolivia_16_factor  <- factor16_country("data/2016_bolivia.dta") %>% 
+  #Checking for uniqueness
   assert(is_uniq, person_id_factor)
 
 bolivia_16_unfactor  <- read_dta("data/2016_bolivia.dta") %>% 
+  #Renaming ID column
   rename(person_id = uniq_id) %>% 
+  #Checking for uniqueness
   assert(is_uniq, person_id) %>% 
+  #Changing ID column to character class
   transform(person_id = as.character(person_id))
 ```
 
 ## Creating factored data frame of questionnarie using `factor18_country()`
 This is similar to 2016 version above; the same process applies.
-
 ```{r}
 factor18_country <- function(country){
   #Reads file for the country
@@ -122,14 +134,18 @@ factor18_country <- function(country){
 }
 ```
 
-## Bolivia 2018 file
+### Bolivia 2018 file
 ```{r}
 bolivia_18_factor <- factor18_country("data/2018_bolivia.dta") %>% 
+  #Checking for uniqueness
   assert(is_uniq, person_id_factor)
 
 bolivia_18_unfactor <- read_dta("data/2018_bolivia.dta") %>%
+  #Renaming ID column
   rename(person_id = uniq_id) %>% 
+  #Checking for uniquness
   assert(is_uniq, person_id) %>% 
+  #Changning ID column to character class
   transform(person_id = as.character(person_id))
 ```
 
