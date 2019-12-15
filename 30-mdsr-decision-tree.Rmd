@@ -6,20 +6,10 @@ editor_options:
 ---
 
 # Structure
-Working to make a decision tree for the Bolivian data.
-
-```{r}
-library(mdsr)
-library(rpart)
-library(partykit)
-library(rattle)
-library(rpart.plot)
-library(RColorBrewer)
-```
+I am going to use a decision tree to model the typical demographic of people asked for a bribe in Bolivia. I have used Chapter 8 of the textbook *Modern Data Science for R* by Benjamin S. Baumer, et al to learn how to create statistical models. 
 
 # Separating into Testing and Training
 I will have a sample of 80% of the rows as the training dataset, and 20% for the testing dataset.
-
 ```{r}
 #Setting the seed
 set.seed(364)
@@ -44,11 +34,13 @@ nrow(train) + nrow(test)
 ```
 
 ```{r}
+#Checking count of answers
 tally(~ police_bribe, data = train)
 ```
 
-I am going to try to find a split for ideology based on one variable first, urban vs. rural, and then expand.
+I am going to try to find a split for `police_bribe` based on one variable first, urban vs. rural, and then expand.
 
+# Model One
 Below, I am looking to see what the likelihood of being asked for a bribe from a police officer is based on living in an urban or rural location.
 ```{r}
 model_one <- rpart(police_bribe ~ urbano_rural, data = train,
@@ -61,6 +53,7 @@ plot(as.party(model_one))
 fancyRpartPlot(model_one, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
 
+# Model Two
 Now I am testing to see if there is a difference based on gender.
 ```{r}
 model_two <- rpart(police_bribe ~ urbano_rural + sexo, data = train,
@@ -73,6 +66,7 @@ plot(as.party(model_two))
 fancyRpartPlot(model_two, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
 
+# Model Three
 ```{r}
 model_three <- rpart(police_bribe ~ urbano_rural + sexo + perceived_safety, data = train,
       method = "class",
@@ -84,31 +78,18 @@ plot(as.party(model_three))
 fancyRpartPlot(model_three, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
 
-```{r}
-test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
-      method = "class",
-      minsplit = 1,
-      minbucket = 1,
-      cp = 0)
 
-plot(as.party(test))
-fancyRpartPlot(test, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
-```
-
-This doesn't work - I think it is getting overwhelmed
-```{r}
-model_four <- rpart(police_bribe ~ ., data = train,
-      method = "class",
-      minsplit = 1,
-      minbucket = 1,
-      cp = -0.001)
-
-plot(as.party(model_four))
-```
-
-
-
-Jesse, the figure is best viewed in its own window. I am now looking for a way to make it easier to read what ages are in each `edad` node.
+# !DO NOT USE REFERENCE ONLY
+#```{r}
+#test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
+#      method = "class",
+#      minsplit = 1,
+#      minbucket = 1,
+#      cp = 0)
+#
+#plot(as.party(test))
+#fancyRpartPlot(test, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
+#```
 
 #```{r}
 #formula <- as.formula("police_bribe ~ .")
