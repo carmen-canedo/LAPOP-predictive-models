@@ -55,6 +55,15 @@ test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
 ```
 
 ```{r}
+test2 <- test <- rpart(police_bribe ~ urbano_rural + sexo + age, data = train,
+      method = "class",
+      minsplit = 1,
+      minbucket = 1,
+      cp = 0)
+```
+
+
+```{r}
 plot(as.party(test))
 ```
 

@@ -66,22 +66,16 @@ labelled_wide %>%
 
 Splitting up the age values for easier reading. Ages range from 18 to 85.
 ```{r}
-#Setting up cut off values
-breaks <- c(18, 27, 28, 37, 38, 47, 48, 57, 58, 67, 68, 77, 78, 87)
-
-#Making interval labels
-tags <- c("18 - 27", "28 - 37", "38 - 47", "48 - 57", "58 - 67", "68 - 77", "78 - 87")
-
 #Bucketing values into bins
 labelled_wide <- labelled_wide %>% 
   transform(edad = as.numeric(edad))
 
-group_tags <- labelled_wide %>% 
+labelled_wide <- labelled_wide %>% 
   mutate(age = cut(labelled_wide$edad,
                   breaks = seq(18, 87, 10),
                   include.lowest = TRUE))
 
-group_tags
+labelled_wide
 ```
 
 
