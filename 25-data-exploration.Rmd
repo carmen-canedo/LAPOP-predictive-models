@@ -6,27 +6,12 @@ editor_options:
 ---
 
 # Structure
-I am now going to explore the tidy version of the 2004-2018 Bolivia data to find factors that influence my question: who is likely to be asked by the police for a bribe.
+I am now going to explore the tidy version of the 2004-2018 Bolivia data to find factors that influence my question: who is likely to be asked by the police for a bribe in Bolivia?
 
 ## Reading through questions
-Familiarizing myself with the questions asked, so I might understand what questions and factors could be relevant using `tabyl()`
+In order to familiarize myself with the questions asked by LAPOP, I'll be using `tabyl()`. This will help give me insight in what qyestions and factors may be relevant.
 
-```{r, message=FALSE}
-library(janitor)
-library(varhandle)
-```
-
-```{r}
-bolivia_clean %>% 
-  tabyl(question_es)
-```
-
-```{r}
-bolivia_clean %>% 
-  filter(question_es == "Ideología (izquierda / derecha)")
-```
-
-Making space for memory
+## Making space for memory
 ```{r}
 rm.all.but("bolivia_clean")
 ```
@@ -34,43 +19,46 @@ rm.all.but("bolivia_clean")
 I had to omit 2 variables, but they were unrelated to the topic, so it works out. My computer otherwise would not have had sufficient memory to widen the data.
 
 ```{r}
+bolivia_clean %>% 
+  #Getting questions only
+  tabyl(question_es)
+```
+
+```{r}
+bolivia_clean %>% 
+  #Filtering to see if questions about political ideology were asked
+  filter(question_es == "Ideología (izquierda / derecha)")
+```
+
+## Widening factored data
+I am widening the data so that it is in the proper form for analysis with the `rpart` package.
+```{r}
 labelled_wide <- bolivia_clean %>% 
-  head(2200000) %>% # Get first 2.2 million rows to reduce memory
+  #Gets first 2.2 million rows to reduce memory
+  head(2200000) %>% 
+  #Widening data frame
   pivot_wider(id_cols = c(person_id_factor, country, wave), 
               names_from = question_es,
               values_from = answer_dimension)
 ```
 
+## Cleaning column names
 ```{r}
 labelled_wide <- labelled_wide %>% 
+  #Renaming these columns due to their length
   rename(ideology = "Ideología (izquierda / derecha)") %>% 
   rename(police_bribe = "Oficial de Policía le solicitó un soborno") %>%
   rename(perceived_safety = "Percepción de inseguridad en el barrio") %>% 
+  #Cleaning names for all columns
   clean_names()
 ```
 
-Translating factor levels for `perceived safety`
-```{r}
-labelled_wide %>% 
-  tabyl(perceived_safety)
-```
 
-```{r}
-labelled_wide$perceived_safety <- labelled_wide %>% 
-  as_factor(perceived_safety, )
-
-
-#  ifelse(perceived_safety == "Algo inseguro(a)", "Somewhat unsafe", )
-         
-         
-#         "Somewhat safe" = "Algo seguro(a)", "Very unsafe" = "Muy inseguro", "Very safe" = "Muy seguro"
-```
-
-
-Changing to NA values
+## Changing to NA values
 ```{r}
 #Function to create NA values in Bolivia dataset
 turn_to_NA <- function(country){
+  #Setting items in list to NA
   country <- set_na(country, na = c("No se le preguntó en este país o año", "Not asked in this country or year","No Aplica", "No Sabe", "No sabe", "No Responde", "No responde"), as.tag = TRUE)
 }
 
@@ -80,31 +68,32 @@ labelled_wide <- turn_to_NA(labelled_wide)
 #Checking to make sure the function worked
 labelled_wide %>% 
   select(police_bribe) %>% 
-  filter(!is.na(police_bribe))
+  filter(is.na(police_bribe))
 ```
 
-Splitting up the age values for easier reading. Ages range from 18 to 85.
-```{r}
+# !DO NOT USE REFERENCE ONLY
+#Splitting up the age values for easier reading. Ages range from 18 to 85.
+#```{r}
 #Bucketing values into bins
-labelled_wide <- labelled_wide %>% 
-  transform(edad = as.numeric(edad))
+#labelled_wide <- labelled_wide %>% 
+#  transform(edad = as.numeric(edad))
 
-labelled_wide <- labelled_wide %>% 
-  mutate(age = cut(labelled_wide$edad,
+#labelled_wide <- labelled_wide %>% 
+#  mutate(age = cut(labelled_wide$edad,
                   breaks = seq(18, 87, 10),
                   include.lowest = TRUE))
 
-labelled_wide
-```
+#labelled_wide
+#```
 
-Removing this variable because it is not necessary
-```{r}
-labelled_wide <-  labelled_wide %>% 
-  select(-person_id_factor)
-```
+#Removing this variable because it is not necessary
+#```{r}
+#labelled_wide <-  labelled_wide %>% 
+#  select(-person_id_factor)
+#```
 
 
-# !DO NOT USE REFERENCE ONLY
+#Wide numeric version
 #```{r}
 #numeric_wide <- bolivia_clean %>% 
 #  head(2200000) %>% # Get first 100K questions to reduce memory %>%
