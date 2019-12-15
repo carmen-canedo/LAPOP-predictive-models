@@ -154,8 +154,8 @@ lengthen_18factor <- function(country) {
 }
 ```
 
-
-# Connects the category and question excel to the dataframes
+# Functions to join .csvs to data
+## Connects the category and question excel to the dataframes
 ```{r}
 factor_add <- function(country){
   #Uses left joins to bring together the excel doc and dataframe based on column name
@@ -166,7 +166,7 @@ factor_add <- function(country){
 }
 ```
 
-#Connects the category and question excel to the dataframes
+## Connects the category and question excel to the dataframes
 ```{r}
 unfactor_add <- function(country){
   #Uses left joins to bring together the excel doc and dataframe based on column name
@@ -177,8 +177,8 @@ unfactor_add <- function(country){
 }
 ```
 
-# Final clean
-This function uses the list made above to remove the desire variables. It also further formats the data frame into the shape it needs to be when we bind all the countries together.
+# Cleaning data
+This function further formats the data frame into the shape it needs to be when we bind all years together.
 ```{r}
 clean <- function(country){
   #Filters out the column names that are not in the list, variables.
@@ -228,7 +228,7 @@ unmerged <- function(unfactor, unfactor16, unfactor18, factor, factor16, factor1
 }
 ```
 
-
+# Combination of all data frames
 ```{r}
 #Bolivia
 bolivia_clean <- unmerged(bolivia_unique_unfactor, bolivia_16_unfactor, bolivia_18_unfactor, bolivia_unique_factor, bolivia_16_factor, bolivia_18_factor)
