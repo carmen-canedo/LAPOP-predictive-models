@@ -6,11 +6,9 @@ editor_options:
 ---
 
 # Structure
-As in the LAPOP dashboard repository, the 2016 files did not include a wave column, so we had to add that manually.
+As in the LAPOP dashboard repository, the 2016 files did not include a wave column, so we had to add that manually. Here, I am adding wave column to the 2016 Bolivia files.
 
-Here, I am adding wave column to the 2016 Bolivia files.
-
-The code comes from step 3 of the LAPOP dashboard repository.
+The code comes from step 3 of the LAPOP dashboard repository, but is only applied to one country in this case.
 
 ## Function to adding wave column
 ### For unfactored datasets
