@@ -41,7 +41,7 @@ tally(~ police_bribe, data = train)
 I am going to try to find a split for `police_bribe` based on one variable first, urban vs. rural, and then expand.
 
 # Model One
-Below, I am looking to see what the likelihood of being asked for a bribe from a police officer is based on living in an urban or rural location.
+Below, I am looking to see what the likelihood of being asked for a bribe from a police officer is based on living in an urban or rural location. I have included two versions of the decision tree: one that was used in the Modern Data Science for R textbook, and another I referenced from [here](https://www.gormanalysis.com/blog/decision-trees-in-r-using-rpart/). I used them both just to see different ways of visualizing the data.
 ```{r}
 model_one <- rpart(police_bribe ~ urbano_rural, data = train,
       method = "class",
@@ -52,9 +52,10 @@ model_one <- rpart(police_bribe ~ urbano_rural, data = train,
 plot(as.party(model_one))
 fancyRpartPlot(model_one, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
+Here, we can see that most people have not been asked bribe, but of those who have, 23% lived in an urban setting. This is slightly higher than those who lived in rural locations, as inidviduals who have been asked for a bribe there is only about 14%.
 
 # Model Two
-Now I am testing to see if there is a difference based on gender.
+Now I am testing to see if there is a difference based on gender in addition to geographical location.
 ```{r}
 model_two <- rpart(police_bribe ~ urbano_rural + sexo, data = train,
       method = "class",
@@ -65,6 +66,7 @@ model_two <- rpart(police_bribe ~ urbano_rural + sexo, data = train,
 plot(as.party(model_two))
 fancyRpartPlot(model_two, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
+It appears that men in an urban setting are most likely to be asked for a bribe more often than women or men who live in rural regions.
 
 # Model Three
 ```{r}
