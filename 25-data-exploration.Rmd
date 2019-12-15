@@ -44,9 +44,28 @@ labelled_wide <- bolivia_clean %>%
 ```{r}
 labelled_wide <- labelled_wide %>% 
   rename(ideology = "Ideología (izquierda / derecha)") %>% 
-  rename(police_bribe = "Oficial de Policía le solicitó un soborno") %>% 
+  rename(police_bribe = "Oficial de Policía le solicitó un soborno") %>%
+  rename(perceived_safety = "Percepción de inseguridad en el barrio") %>% 
   clean_names()
 ```
+
+Translating factor levels for `perceived safety`
+```{r}
+labelled_wide %>% 
+  tabyl(perceived_safety)
+```
+
+```{r}
+labelled_wide$perceived_safety <- labelled_wide %>% 
+  as_factor(perceived_safety, )
+
+
+#  ifelse(perceived_safety == "Algo inseguro(a)", "Somewhat unsafe", )
+         
+         
+#         "Somewhat safe" = "Algo seguro(a)", "Very unsafe" = "Muy inseguro", "Very safe" = "Muy seguro"
+```
+
 
 Changing to NA values
 ```{r}

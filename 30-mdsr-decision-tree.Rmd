@@ -12,6 +12,9 @@ Working to make a decision tree for the Bolivian data.
 library(mdsr)
 library(rpart)
 library(partykit)
+library(rattle)
+library(rpart.plot)
+library(RColorBrewer)
 ```
 
 # Separating into Testing and Training
@@ -46,26 +49,64 @@ tally(~ police_bribe, data = train)
 
 I am going to try to find a split for ideology based on one variable first, urban vs. rural, and then expand.
 
+Below, I am looking to see what the likelihood of being asked for a bribe from a police officer is based on living in an urban or rural location.
+```{r}
+model_one <- rpart(police_bribe ~ urbano_rural, data = train,
+      method = "class",
+      minsplit = 1,
+      minbucket = 1,
+      cp = -1)
+
+plot(as.party(model_one))
+fancyRpartPlot(model_one, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
+```
+
+Now I am testing to see if there is a difference based on gender.
+```{r}
+model_two <- rpart(police_bribe ~ urbano_rural + sexo, data = train,
+      method = "class",
+      minsplit = 1,
+      minbucket = 1,
+      cp = -0.001)
+
+plot(as.party(model_two))
+fancyRpartPlot(model_two, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
+```
+
+```{r}
+model_three <- rpart(police_bribe ~ urbano_rural + sexo + perceived_safety, data = train,
+      method = "class",
+      minsplit = 1,
+      minbucket = 1,
+      cp = -1)
+
+plot(as.party(model_three))
+fancyRpartPlot(model_three, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
+```
+
 ```{r}
 test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
       method = "class",
       minsplit = 1,
       minbucket = 1,
       cp = 0)
-```
 
-```{r}
-test <- rpart(police_bribe ~ ., data = train,
-      method = "class",
-      minsplit = 4,
-      minbucket = 4,
-      cp = -.001)
-```
-
-
-```{r}
 plot(as.party(test))
+fancyRpartPlot(test, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
+
+This doesn't work - I think it is getting overwhelmed
+```{r}
+model_four <- rpart(police_bribe ~ ., data = train,
+      method = "class",
+      minsplit = 1,
+      minbucket = 1,
+      cp = -0.001)
+
+plot(as.party(model_four))
+```
+
+
 
 Jesse, the figure is best viewed in its own window. I am now looking for a way to make it easier to read what ages are in each `edad` node.
 
