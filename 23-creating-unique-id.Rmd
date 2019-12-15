@@ -14,7 +14,7 @@ Then, a similar function is written for the factored countries, but in this step
 
 The unfactored and factored datasets will be joined later in the process.
 
-## Function to make unique ID for unfactored countries
+## Function to make unique ID
 ```{r}
 making_uniqueID <- function(country){
   #Combines idnum and idnum_14 with "/"
@@ -42,13 +42,13 @@ making_uniqueID <- function(country){
 }
 ```
 
-#### Applying `making_uniqueID` to all unfactored, merged Bolivia file
+#### Applying `making_uniqueID` to unfactored, merged Bolivia file
 ```{r}
 bolivia_unique_unfactor <- making_uniqueID(bolivia_unfactor)
 ```
 
-## Function to make unique ID for factored countries
-The function below is the same as above, except `making_uniqueID` is now `making_uniqueID_factor` to indicate it needs to be used for factored data
+## Function to make unique ID for factored data
+The function below is the same as above, except `making_uniqueID` is now `making_uniqueID_factor` to indicate it needs to be used for factored data.
 ```{r}
 making_uniqueID_factor <- function(country){
   #Combines idnum and idnum_14 with "/" and then makes unique id
@@ -76,8 +76,7 @@ making_uniqueID_factor <- function(country){
 ```
 
 
-#### Applying `making_uniqueID_factor` to all countries
-The note about Guyana and Jamiaca applies here as well.
+#### Applying `making_uniqueID_factor` to Bolivia
 ```{r}
 bolivia_unique_factor <- making_uniqueID_factor(bolivia_factor)
 ```
