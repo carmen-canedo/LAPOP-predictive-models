@@ -6,7 +6,7 @@ editor_options:
 ---
 
 # Structure
-I am now going to explore the tidy version of the 2004-2018 Bolivia data to find factors that influence my question: who is likely to support the MAS party moving forward?
+I am now going to explore the tidy version of the 2004-2018 Bolivia data to find factors that influence my question: who is likely to be asked by the police for a bribe.
 
 ## Reading through questions
 Familiarizing myself with the questions asked, so I might understand what questions and factors could be relevant using `tabyl()`
@@ -26,24 +26,16 @@ bolivia_clean %>%
   filter(question_es == "Ideología (izquierda / derecha)")
 ```
 
-
+Making space for memory
 ```{r}
 rm.all.but("bolivia_clean")
-```
-
-```{r}
-numeric_wide <- bolivia_clean %>% 
-  head(2200000) %>% # Get first 100K questions to reduce memory %>%
-  pivot_wider(id_cols = c(person_id_factor, country, wave), 
-              names_from = question_es,
-              values_from = answer_measure)
 ```
 
 I had to omit 2 variables, but they were unrelated to the topic, so it works out. My computer otherwise would not have had sufficient memory to widen the data.
 
 ```{r}
 labelled_wide <- bolivia_clean %>% 
-  head(2200000) %>% # Get first 100K questions to reduce memory %>%
+  head(2200000) %>% # Get first 2.2 million rows to reduce memory
   pivot_wider(id_cols = c(person_id_factor, country, wave), 
               names_from = question_es,
               values_from = answer_dimension)
@@ -71,3 +63,13 @@ labelled_wide %>%
   select(police_bribe) %>% 
   filter(!is.na(police_bribe))
 ```
+
+
+# !DO NOT USE REFERENCE ONLY
+#```{r}
+#numeric_wide <- bolivia_clean %>% 
+#  head(2200000) %>% # Get first 100K questions to reduce memory %>%
+#  pivot_wider(id_cols = c(person_id_factor, country, wave), 
+#              names_from = question_es,
+#              values_from = answer_measure)
+#```

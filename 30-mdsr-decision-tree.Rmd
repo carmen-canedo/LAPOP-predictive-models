@@ -1,5 +1,5 @@
 ---
-title: "31 - MDSR Decision Trees"
+title: "30 - MDSR Decision Trees"
 output: html_notebook
 editor_options: 
   chunk_output_type: inline
@@ -10,6 +10,8 @@ Working to make a decision tree for the Bolivian data.
 
 ```{r}
 library(mdsr)
+library(rpart)
+library(partykit)
 ```
 
 # Separating into Testing and Training
@@ -42,11 +44,7 @@ nrow(train) + nrow(test)
 tally(~ police_bribe, data = train)
 ```
 
-I am going to try to find a split for ideology based on one variable first, urban vs. rural.
-
-```{r}
-library(rpart)
-```
+I am going to try to find a split for ideology based on one variable first, urban vs. rural, and then expand.
 
 ```{r}
 test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
@@ -60,32 +58,16 @@ test <- rpart(police_bribe ~ urbano_rural + sexo + edad, data = train,
 plot(as.party(test))
 ```
 
-Only getting one node here.
+Jesse, the figure is best viewed in its own window. I am now looking for a way to make it easier to read what ages are in each `edad` node.
 
-# !DO NOT USE REFERENCE ONLY
 #```{r}
-# ggplot(data = train, aes(x = police_bribe, y = urbano_rural)) +
-#   geom_count(aes(color = urbano_rural),
-# position = position_jitter(width = 0, height = 0.1), alpha = 0.5)
+#formula <- as.formula("police_bribe ~ .")
+#mod_tree <- rpart(formula,
+#                  data = train,
+#                  method = "class",
+#                  minsplit = 1,
+#                  minbucket = 1,
+#                  cp = -1)
+#mod_tree
 #```
-
-```{r}
-formula <- as.formula("police_bribe ~ .")
-mod_tree <- rpart(formula,
-                  data = train,
-                  method = "class",
-                  minsplit = 1,
-                  minbucket = 1,
-                  cp = -1)
-mod_tree
-```
-
-```{r}
-library(partykit)
-```
-
-```{r}
-plot(as.party(mod_tree))
-```
-
 

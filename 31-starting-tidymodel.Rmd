@@ -1,5 +1,5 @@
 ---
-title: "30 - Starting Tidymodel"
+title: "31 - Starting Tidymodel"
 output: html_notebook
 editor_options: 
   chunk_output_type: inline
