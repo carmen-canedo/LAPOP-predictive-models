@@ -69,6 +69,7 @@ fancyRpartPlot(model_two, main = "Individuals Asked for a Bribe by the Police in
 It appears that men in an urban setting are most likely to be asked for a bribe more often than women or men who live in rural regions.
 
 # Model Three
+Here I am looking to see if perceived safety of the neighborhood has an affect on whether the individual was asked for a bribe.
 ```{r}
 model_three <- rpart(police_bribe ~ urbano_rural + sexo + perceived_safety, data = train,
       method = "class",
@@ -80,6 +81,9 @@ plot(as.party(model_three))
 fancyRpartPlot(model_three, main = "Individuals Asked for a Bribe by the Police in Bolivia", caption = "Source: LAPOP")
 ```
 
+When taking into account the perception of safety of the neighborhood, it is evident that 36% of men who live in an ubran area they perceive as very unsafe are most likely to be asked for a bribe by the police.
+
+In futher studies, I will conduct cross-validation using the testing data.
 
 # !DO NOT USE REFERENCE ONLY
 #```{r}
