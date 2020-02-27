@@ -12,7 +12,7 @@ For the categories, we created two separate excel documents. They both have colu
 
 The reason we use two separate names for "column_name" is so that we can differentiate between factor/unfactored, but we left category the same so that we could join the two datasets later on. 
 
-For the questions, we created two separate excel documents, as well. They both have columns for column name and questions. The column name follows the same format as described aboved. The questions are slightly different because the factored spreadsheet, the question column is called "question_factor" and all of its elements are followed by "_factor". The unfactored version, "question_unfactor" has elements followed by "_unfactor" instead. 
+For the questions, we created two separate excel documents, as well. They both have columns for column name and questions. The column name follows the same format as described aboved. The questions are slightly different because the factored spreadsheet, the question column is called "question_factor" and all of itss elements are followed by "_factor". The unfactored version, "question_unfactor" has elements followed by "_unfactor" instead. 
 
 We needed to differentiate between the questions so that we can join on category later on.
 
